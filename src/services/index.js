@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import Blockchain from '../blockchain';
 import P2PService, { MESSAGE } from './p2p';
 import Wallet from '../wallet';
+import Miner from '../miner';
 
 dotenv.config();
 
@@ -11,7 +12,9 @@ const { HTTP_PORT } = process.env;
 const app = express();
 const blockchain = new Blockchain();
 const wallet = new Wallet(blockchain);
+const walletMiner = new Wallet(blockchain, 1000);
 const p2pService = new P2PService(blockchain);
+const miner = new Miner(blockchain, p2pService, walletMiner);
 
 blockchain.addBlock('express');
 
@@ -37,6 +40,7 @@ app.post('/transactions', (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 app.post('/mine', (req, res) => {
   const { body: { data } } = req;
   const block = blockchain.addBlock(data);
@@ -47,6 +51,14 @@ app.post('/mine', (req, res) => {
   });
 });
 
+app.get('/mine/transactions', (req, res) => {
+  try {
+    miner.mine();
+    res.redirect('/blocks');
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 app.listen(HTTP_PORT || 3000, () => {
   console.log(`server on port ${HTTP_PORT}`);
   p2pService.listen();
