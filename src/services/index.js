@@ -41,14 +41,19 @@ app.post('/transactions', (req, res) => {
   }
 });
 
-app.post('/mine', (req, res) => {
-  const { body: { data } } = req;
-  const block = blockchain.addBlock(data);
-  p2pService.sync();
-  res.status(200).json({
-    blocks: blockchain.blocks.length,
-    block,
-  });
+// app.post('/mine', (req, res) => {
+//   const { body: { data } } = req;
+//   const block = blockchain.addBlock(data);
+//   p2pService.sync();
+//   res.status(200).json({
+//     blocks: blockchain.blocks.length,
+//     block,
+//   });
+// });
+
+app.get('/wallet', (req, res) => {
+  const { publicKey } = new Wallet(blockchain);
+  res.status(200).json(publicKey);
 });
 
 app.get('/mine/transactions', (req, res) => {

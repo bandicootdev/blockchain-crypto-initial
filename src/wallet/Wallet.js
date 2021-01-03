@@ -16,9 +16,8 @@ class Wallet {
   }
 
   createTransaction(recipientAddress, amount) {
-    const { blockchain: { memoryPool } } = this;
-    const balance = this.calculateBalance();
-    if (amount > balance) throw Error(`Amount: ${amount} exceeds current balance: ${balance}`);
+    const { currentBalance, blockchain: { memoryPool } } = this;
+    if (amount > currentBalance) throw Error(`Amount: ${amount} exceeds current balance: ${currentBalance}`);
     let tx = memoryPool.find(this.publicKey);
     if (tx) {
       tx.update(this, recipientAddress, amount);
@@ -29,7 +28,7 @@ class Wallet {
     return tx;
   }
 
-  calculateBalance() {
+  get currentBalance() {
     const { blockchain: { blocks = [] }, publicKey } = this;
     let { balance } = this;
     const txs = [];
