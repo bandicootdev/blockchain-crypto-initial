@@ -18,7 +18,7 @@ class Block {
   // eslint-disable-next-line getter-return
   static get genesis() {
     const timestamp = (new Date(2000, 0, 1)).getTime();
-    return new this(timestamp, undefined, 'GenesisHash', 'Soy una prueba :)', DIFFICULTY);
+    return new this(timestamp, undefined, 'GenesisHash', 'Soy una prueba :)', 0, DIFFICULTY);
   }
 
   static mine(previousBlock, data) {
@@ -27,7 +27,6 @@ class Block {
     let hash;
     let nonce = 0;
     let { difficulty } = previousBlock;
-
     do {
       timestamp = Date.now();
       nonce += 1;
