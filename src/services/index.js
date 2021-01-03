@@ -3,12 +3,14 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import Blockchain from '../blockchain';
 import P2PService from './p2p';
+import Wallet from '../wallet';
 
 dotenv.config();
 
 const { HTTP_PORT } = process.env;
 const app = express();
 const blockchain = new Blockchain();
+const wallet = new Wallet(blockchain);
 const p2pService = new P2PService(blockchain);
 
 blockchain.addBlock('express');
@@ -20,6 +22,20 @@ app.get('/blocks', (req, res) => {
   res.status(200).json(blockchain.blocks);
 });
 
+app.get('/transactions', (req, res) => {
+  const { memoryPool: { transactions } } = blockchain;
+  res.status(200).json(transactions);
+});
+
+app.post('/transactions', (req, res) => {
+  try {
+    const { body: { recipient, amount } } = req;
+    const tx = wallet.createTransaction(recipient, amount);
+    return res.status(200).json(tx);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 app.post('/mine', (req, res) => {
   const { body: { data } } = req;
   const block = blockchain.addBlock(data);
