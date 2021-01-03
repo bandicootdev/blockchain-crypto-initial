@@ -1,0 +1,22 @@
+{
+  "name": "blockchain-crypto-initial",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/thaymerapv/blockchain-crypto-initial.git",
+  "author": "Thaymer portillo <42485564+thaymerapv@users.noreply.github.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/node": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "eslint": "^7.17.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "nodemon": "^2.0.6"
+  },
+  "scripts": {
+    "start": "babel-node index.js",
+    "dev": "nodemon --exec yarn start",
+    "lint": "eslint index.js"
+  }
+}
