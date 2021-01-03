@@ -1,14 +1,11 @@
-import Elliptic from 'elliptic';
-import hash from '../utils/hash';
-// eslint-disable-next-line new-cap
-const ec = new Elliptic.ec('secp256k1');
+import { elliptic, hash } from '../utils/index';
 
 const INITIAL_BALANCE = 100;
 
 class Wallet {
   constructor() {
     this.balance = INITIAL_BALANCE;
-    this.keyPair = ec.genKeyPair();
+    this.keyPair = elliptic.createKeyPair();
     this.publicKey = this.keyPair.getPublic().encode('hex');
   }
 
