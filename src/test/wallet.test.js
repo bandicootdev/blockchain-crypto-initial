@@ -51,4 +51,51 @@ describe('Wallet', () => {
       });
     });
   });
+
+  describe('calculating a balance', () => {
+    let addBalance;
+    let times;
+    let senderWallet;
+    beforeEach(() => {
+      addBalance = 16;
+      times = 3;
+      senderWallet = new Wallet(blockchain);
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < times; i++) {
+        senderWallet.createTransaction(wallet.publicKey, addBalance);
+      }
+      blockchain.addBlock(blockchain.memoryPool.transactions);
+    });
+
+    it('calculates the balance for blockchain txs matching the recipient ', () => {
+      expect(wallet.calculateBalance()).toEqual(INITIAL_BALANCE + addBalance * times);
+    });
+
+    it('calculate the balance for blockchain txs matching the sender', () => {
+      expect(senderWallet.calculateBalance()).toEqual(INITIAL_BALANCE - (addBalance * times));
+    });
+
+    describe('and the recipient conducts a transaction', () => {
+      let substractBalance;
+      let recipientBalwnce;
+      beforeEach(() => {
+        blockchain.memoryPool.wipe();
+        substractBalance = 64;
+        recipientBalwnce = wallet.calculateBalance();
+        wallet.createTransaction(senderWallet.publicKey, addBalance);
+        blockchain.addBlock(blockchain.memoryPool.transactions);
+      });
+
+      describe('and the sender sends another transactions to the recipient', () => {
+        beforeEach(() => {
+          blockchain.memoryPool.wipe();
+          senderWallet.createTransaction(wallet.publicKey, addBalance);
+          blockchain.addBlock(blockchain.memoryPool.transactions);
+        });
+        it('calculate the recipient balance only using txs since its most recent one ', () => {
+          expect(wallet.calculateBalance()).toEqual(recipientBalwnce - substractBalance + addBalance);
+        });
+      });
+    });
+  });
 });
