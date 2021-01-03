@@ -1,4 +1,5 @@
 import Block from './Block';
+import validate from '../utils/validate';
 
 class Blockchain {
   constructor() {
@@ -10,6 +11,17 @@ class Blockchain {
     const block = Block.mine(previousBlock, data);
     this.blocks.push(block);
     return block;
+  }
+
+  replace(newBlocks = []) {
+    if (newBlocks.length < this.blocks) throw Error('received chain is not longer than current chain');
+    try {
+      validate(newBlocks);
+    } catch (err) {
+      throw Error('received chain is invalid');
+    }
+    this.blocks = newBlocks;
+    return this.blocks;
   }
 }
 
