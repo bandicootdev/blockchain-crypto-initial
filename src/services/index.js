@@ -1,11 +1,15 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import bodyParser from 'body-parser';
-import Blockchain, { Block } from '../blockchain';
+import Blockchain from '../blockchain';
+import P2PService from './p2p';
 
-const { HTTP_PORT = 3000 } = process.env;
+dotenv.config();
 
+const { HTTP_PORT } = process.env;
 const app = express();
 const blockchain = new Blockchain();
+const p2pService = new P2PService(blockchain);
 
 blockchain.addBlock('express');
 
@@ -26,4 +30,7 @@ app.post('/mine', (req, res) => {
   });
 });
 
-app.listen(HTTP_PORT, () => console.log(`server on port ${HTTP_PORT}`));
+app.listen(HTTP_PORT || 3000, () => {
+  console.log(`server on port ${HTTP_PORT}`);
+  p2pService.listen();
+});
