@@ -9,9 +9,9 @@ describe('Transaction', () => {
 
   beforeEach(() => {
     wallet = new Wallet();
-    recipientAddress = 'address a transferir';
+    recipientAddress = 'address a transfer';
     amount = 5;
-    transaction = new Transaction().create(wallet, recipientAddress, amount);
+    transaction = new Transaction.create(wallet, recipientAddress, amount);
   });
 
   it('outputs the amount subtracted from de wallace balance ', () => {
@@ -31,7 +31,7 @@ describe('Transaction', () => {
     });
     it('does not create the transaction ', () => {
       expect(() => {
-        transaction = new Transaction().create(wallet, recipientAddress, amount);
+        transaction = Transaction.create(wallet, recipientAddress, amount);
       }).toThrowError(`Amount: ${amount} exceeds balance`);
     });
   });
@@ -52,8 +52,30 @@ describe('Transaction', () => {
   it('validates a valid transaction', () => {
     expect(Transaction.verify(transaction)).toBe(true);
   });
+
   it('', () => {
     transaction.outputs[0].amount = 500;
     expect(Transaction.verify(transaction)).toBe(false);
+  });
+
+  describe('and updating a transaction', () => {
+    let nextAmount;
+    let nextRecipient;
+
+    beforeEach(() => {
+      nextAmount = 5;
+      nextRecipient = 'address-test';
+      transaction = transaction.update(wallet, nextRecipient, nextAmount);
+    });
+
+    it('subtracts the next amount from de senders wallet', () => {
+      const output = transaction.outputs.find(({ address }) => address === wallet.publicKey);
+      expect(output.amount).toEqual(wallet.balance - amount - nextAmount);
+    });
+
+    it('outputs an amount for then next recipient ', () => {
+      const output = transaction.outputs.find(({ address }) => address === nextRecipient);
+      expect(output.amount).toEqual(nextAmount);
+    });
   });
 });

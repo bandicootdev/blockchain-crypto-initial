@@ -8,7 +8,7 @@ class Transaction {
     this.outputs = [];
   }
 
-  create(senderWallet, recipientAddress, amount) {
+  static create(senderWallet, recipientAddress, amount) {
     const { balance, publicKey } = senderWallet;
     if (amount > balance) throw Error(`Amount: ${amount} exceeds balance`);
     const transaction = new Transaction();
