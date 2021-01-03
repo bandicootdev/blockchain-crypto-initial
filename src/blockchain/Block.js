@@ -6,6 +6,12 @@ class Block {
     this.data = data;
   }
 
+  // eslint-disable-next-line getter-return
+  static get genesis() {
+    const timestamp = (new Date(2000, 0, 1)).getTime();
+    return new this(timestamp, undefined, 'GenesisHash', 'Soy una prueba :)');
+  }
+
   toString() {
     const {
       timestamp, previousHash, hash, data,
