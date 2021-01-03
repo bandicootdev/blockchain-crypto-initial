@@ -1,22 +1,24 @@
 import crypto from 'crypto-js';
+import adjustDifficulty from '../utils/adjustDifficulty';
 
 const { SHA256 } = crypto;
 
-const DIFFICULTY = 2;
+const DIFFICULTY = 3;
 
 class Block {
-  constructor(timestamp, previousHash, hash, data, nonce) {
+  constructor(timestamp, previousHash, hash, data, nonce, difficulty) {
     this.timestamp = timestamp;
     this.previousHash = previousHash;
     this.hash = hash;
     this.data = data;
     this.nonce = nonce;
+    this.difficulty = difficulty;
   }
 
   // eslint-disable-next-line getter-return
   static get genesis() {
     const timestamp = (new Date(2000, 0, 1)).getTime();
-    return new this(timestamp, undefined, 'GenesisHash', 'Soy una prueba :)');
+    return new this(timestamp, undefined, 'GenesisHash', 'Soy una prueba :)', DIFFICULTY);
   }
 
   static mine(previousBlock, data) {
@@ -24,28 +26,32 @@ class Block {
     let timestamp;
     let hash;
     let nonce = 0;
+    let { difficulty } = previousBlock;
+
     do {
       timestamp = Date.now();
       nonce += 1;
-      hash = Block.hash(timestamp, previousHash, data, nonce);
-    } while (hash.substring(0, DIFFICULTY) !== '0'.repeat(DIFFICULTY));
-    return new this(timestamp, previousHash, hash, data, nonce);
+      difficulty = adjustDifficulty(previousBlock, timestamp);
+      hash = Block.hash(timestamp, previousHash, data, nonce, difficulty);
+    } while (hash.substring(0, difficulty) !== '0'.repeat(difficulty));
+    return new this(timestamp, previousHash, hash, data, nonce, difficulty);
   }
 
-  static hash(timestamp, previousHash, data, nonce) {
-    return SHA256(`${timestamp}${previousHash}${data}${nonce}`).toString();
+  static hash(timestamp, previousHash, data, nonce, difficulty) {
+    return SHA256(`${timestamp}${previousHash}${data}${nonce}${difficulty}`).toString();
   }
 
   toString() {
     const {
-      timestamp, previousHash, hash, data, nonce,
+      timestamp, previousHash, hash, data, nonce, difficulty,
     } = this;
     return `Block -
         timestamp     : ${timestamp}
         previousHash  : ${previousHash}
         hash          : ${hash}
         data          : ${data}
-        nonce         : ${nonce}`;
+        nonce         : ${nonce}
+        difficulty    : ${difficulty}`;
   }
 }
 

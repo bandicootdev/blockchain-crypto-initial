@@ -1,4 +1,4 @@
-import Block, { DIFFICULTY } from '../blockchain/Block';
+import Block from '../blockchain/Block';
 
 describe('block', () => {
   let timestamp;
@@ -25,8 +25,9 @@ describe('block', () => {
 
   it('use static mine ', () => {
     const block = Block.mine(previousBlock, data);
+    const { difficulty } = block;
     expect(block.hash.length).toEqual(64);
-    expect(block.hash.substr(0, DIFFICULTY)).toEqual('0'.repeat(DIFFICULTY));
+    expect(block.hash.substr(0, difficulty)).toEqual('0'.repeat(difficulty));
     expect(block.previousHash).toEqual(previousBlock.hash);
     expect(block.nonce).not.toEqual(0);
 
@@ -35,7 +36,7 @@ describe('block', () => {
 
   it('use static hash ', () => {
     hash = Block.hash(timestamp, previousBlock.hash, data, nonce);
-    const hashOutput = '7cd1c89085c30cf855232c247b451baad921b71457c63770dbb05129b17cec7d';
+    const hashOutput = '8c7beb14f8d0d7ae1e03c11833a8acfc8c328004ae838c350faa91f710b8c9b1';
     expect(hash).toEqual(hashOutput);
   });
 
