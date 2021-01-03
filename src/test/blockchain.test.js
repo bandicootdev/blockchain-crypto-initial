@@ -20,5 +20,4 @@ describe('blockchain', () => {
     expect(lastBlock.data).toEqual(data);
     expect(blockchain.blocks.length).toEqual(2);
   });
-
 });
