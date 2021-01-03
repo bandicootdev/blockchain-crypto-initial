@@ -1,3 +1,6 @@
+import { blockchainWallet, Transaction } from '../wallet';
+import { MESSAGE } from '../services/p2p';
+
 class Miner {
   constructor(blockchain, p2pService, wallet) {
     this.blockchain = blockchain;
@@ -6,7 +9,14 @@ class Miner {
   }
 
   mine() {
-    const { blockchain: { memoryPool } } = this;
+    const { blockchain: { memoryPool }, wallet, p2pService } = this;
+    if (memoryPool.transactions.length === 0) throw Error('there are no unconfirmed transactions');
+    memoryPool.transactions.push(Transaction.reward(wallet, blockchainWallet));
+    const block = this.blockchain.addBlock(memoryPool.toString());
+    p2pService.sync();
+    memoryPool.wipe();
+    p2pService.broadcast(MESSAGE.WIPE);
+    return block;
   }
 }
 
