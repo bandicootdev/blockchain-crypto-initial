@@ -10,7 +10,7 @@ describe('MemoryPool', () => {
     memoryPool = new MemoryPool();
     wallet = new Wallet();
     transaction = Transaction.create(wallet, 'random-address', 5);
-    memoryPool.adOrUpdate(transaction);
+    memoryPool.addOrUpdate(transaction);
   });
 
   it('has one transaction ', () => {
@@ -25,7 +25,7 @@ describe('MemoryPool', () => {
   it('update a transaction in the memoryPool ', () => {
     const txOld = JSON.stringify(transaction);
     const txNew = transaction.update(wallet, 'other-addres', 10);
-    memoryPool.adOrUpdate(txNew);
+    memoryPool.addOrUpdate(txNew);
     expect(memoryPool.transactions.length).toEqual(1);
     const found = memoryPool.transactions.find(({ id }) => id === transaction.id);
     expect(JSON.stringify(found)).not.toEqual(txOld);

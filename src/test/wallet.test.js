@@ -1,9 +1,12 @@
 import Wallet, { INITIAL_BALANCE } from '../wallet/Wallet';
+import Blockchain from '../blockchain';
 
 describe('Wallet', () => {
+  let blockchain;
   let wallet;
   beforeEach(() => {
-    wallet = new Wallet();
+    blockchain = new Blockchain();
+    wallet = new Wallet(blockchain);
   });
 
   it('it is a healthy wallet', () => {
@@ -17,5 +20,35 @@ describe('Wallet', () => {
     const signature = wallet.sign('hello');
     expect(typeof signature).toEqual('object');
     expect(signature).toEqual(wallet.sign('hello'));
+  });
+
+  describe('creating transaction', () => {
+    let tx;
+    let recipientAddress;
+    let amount;
+    beforeEach(() => {
+      recipientAddress = 'random-address';
+      amount = 5;
+      tx = wallet.createTransaction(recipientAddress, amount);
+    });
+
+    describe('and doing the sema transaction', () => {
+      beforeEach(() => {
+        tx = wallet.createTransaction(recipientAddress, amount);
+      });
+
+      it('double the amount subtracted from de wallet balance ', () => {
+        const output = tx.outputs.find(({ address }) => address === wallet.publicKey);
+        expect(output.amount).toEqual(wallet.balance - (amount * 2));
+      });
+
+      it('clones the amount output for the recipient ', () => {
+        const amounts = tx.outputs
+          .filter(({ address }) => address === recipientAddress)
+          .map((output) => output.amount);
+
+        expect(amounts).toEqual([amount, amount]);
+      });
+    });
   });
 });
