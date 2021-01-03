@@ -1,7 +1,5 @@
-import crypto from 'crypto-js';
 import adjustDifficulty from '../utils/adjustDifficulty';
-
-const { SHA256 } = crypto;
+import genHash from '../utils/hash';
 
 const DIFFICULTY = 3;
 
@@ -37,7 +35,7 @@ class Block {
   }
 
   static hash(timestamp, previousHash, data, nonce, difficulty) {
-    return SHA256(`${timestamp}${previousHash}${data}${nonce}${difficulty}`).toString();
+    return genHash(`${timestamp}${previousHash}${data}${nonce}${difficulty}`).toString();
   }
 
   toString() {
