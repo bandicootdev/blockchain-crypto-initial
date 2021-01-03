@@ -1,17 +1,17 @@
-import { v5 } from 'uuid';
+import { v4 } from 'uuid';
 
 class Transaction {
   constructor() {
-    this.id = v5();
+    this.id = v4();
     this.input = null;
-    this.output = [];
+    this.outputs = [];
   }
 
   create(senderWallet, recipientAddress, amount) {
     const { balance, publicKey } = senderWallet;
     if (amount > balance) throw Error(`Amount: ${amount} exceeds balance`);
     const transaction = new Transaction();
-    transaction.output.push(...[
+    transaction.outputs.push(...[
       { amount: balance - amount, address: publicKey },
       { amount, address: recipientAddress },
     ]);
