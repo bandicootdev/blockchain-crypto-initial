@@ -11,7 +11,6 @@ class MemoryPool {
       this.transactions.push(transaction);
     }
   }
-
 }
 
 export default MemoryPool;
