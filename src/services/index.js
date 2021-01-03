@@ -23,7 +23,7 @@ app.get('/blocks', (req, res) => {
 app.post('/mine', (req, res) => {
   const { body: { data } } = req;
   const block = blockchain.addBlock(data);
-
+  p2pService.sync();
   res.status(200).json({
     blocks: blockchain.blocks.length,
     block,
