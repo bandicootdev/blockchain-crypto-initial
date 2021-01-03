@@ -1,4 +1,6 @@
-import { SHA256 } from 'crypto-js';
+import crypto from 'crypto-js';
+
+const { SHA256 } = crypto;
 
 class Block {
   constructor(timestamp, previousHash, hash, data) {
