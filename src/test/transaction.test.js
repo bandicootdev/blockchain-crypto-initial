@@ -11,6 +11,7 @@ describe('Transaction', () => {
     wallet = new Wallet();
     recipientAddress = 'address a transfer';
     amount = 5;
+    // eslint-disable-next-line new-cap
     transaction = new Transaction.create(wallet, recipientAddress, amount);
   });
 
