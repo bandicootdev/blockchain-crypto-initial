@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import bodyParser from 'body-parser';
 import Blockchain from '../blockchain';
-import P2PService from './p2p';
+import P2PService, { MESSAGE } from './p2p';
 import Wallet from '../wallet';
 
 dotenv.config();
@@ -31,6 +31,7 @@ app.post('/transactions', (req, res) => {
   try {
     const { body: { recipient, amount } } = req;
     const tx = wallet.createTransaction(recipient, amount);
+    p2pService.broadcast(MESSAGE.TX, tx);
     return res.status(200).json(tx);
   } catch (err) {
     res.status(500).json({ error: err.message });
