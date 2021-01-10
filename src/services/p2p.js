@@ -1,10 +1,12 @@
-import dotenv from 'dotenv';
+// import dotenv from 'dotenv';
 import webSocket from 'ws';
+import nodes from './initialize';
 
-dotenv.config();
+// dotenv.config();
 
-const { P2P_PORT, PEERS } = process.env;
-const peers = PEERS ? PEERS.split(',') : [];
+// const { P2P_PORT, PEERS } = process.env;
+// const peers = PEERS ? PEERS.split(',') : [];
+
 const MESSAGE = {
   BLOCKS: 'blocks',
   TX: 'transactions',
@@ -17,27 +19,27 @@ class P2PService {
     this.sockets = [];
   }
 
-  listen() {
-    const server = new webSocket.Server({ port: P2P_PORT || 5000 });
+  listen(peerPort) {
+    const server = new webSocket.Server({ port: peerPort });
     server.on('connection', (socket) => this.onConnection(socket));
-    peers.forEach((peer) => {
+    // nodes.shift();
+    nodes.forEach(({ PEER }) => {
       // eslint-disable-next-line new-cap
-      const socket = new webSocket(peer);
+      const socket = new webSocket(`ws:localhost:${PEER}`);
       socket.on('open', () => this.onConnection(socket));
     });
-    console.log(`server ws in ${P2P_PORT}`);
+    console.log(`server ws in ${peerPort}`);
   }
 
   onConnection(socket) {
     const { blockchain } = this;
-    console.log('[ws:socket] connected');
     this.sockets.push(socket);
     socket.on('message', (message) => {
       const { type, value } = JSON.parse(message);
       try {
         if (type === MESSAGE.BLOCKS) blockchain.replace(value);
         else if (type === MESSAGE.TX) blockchain.memoryPool.addOrUpdate(value);
-        else if (type === MESSAGE.WIPE)blockchain.memoryPool.wipe();
+        else if (type === MESSAGE.WIPE) blockchain.memoryPool.wipe();
       } catch (err) {
         throw Error(err);
       }
@@ -56,5 +58,6 @@ class P2PService {
     this.sockets.forEach((socket) => socket.send(message));
   }
 }
+
 export { MESSAGE };
 export default P2PService;

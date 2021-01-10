@@ -8,7 +8,6 @@ import Miner from '../miner';
 
 dotenv.config();
 
-const { HTTP_PORT } = process.env;
 const app = express();
 const blockchain = new Blockchain();
 const wallet = new Wallet(blockchain);
@@ -64,7 +63,5 @@ app.get('/mine/transactions', (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-app.listen(HTTP_PORT || 3000, () => {
-  console.log(`server on port ${HTTP_PORT}`);
-  p2pService.listen();
-});
+
+export { p2pService, app };
