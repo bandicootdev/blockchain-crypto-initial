@@ -12,7 +12,7 @@ class Miner {
     const { blockchain: { memoryPool }, wallet, p2pService } = this;
     if (memoryPool.transactions.length === 0) throw Error('there are no unconfirmed transactions');
     memoryPool.transactions.push(Transaction.reward(wallet, blockchainWallet));
-    const block = this.blockchain.addBlock(memoryPool.toString());
+    const block = this.blockchain.addBlock(memoryPool);
     p2pService.sync();
     memoryPool.wipe();
     p2pService.broadcast(MESSAGE.WIPE);
